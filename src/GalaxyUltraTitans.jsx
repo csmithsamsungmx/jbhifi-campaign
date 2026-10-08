@@ -29,6 +29,10 @@ const ProgressBar = ({ sales, cutIn, target }) => {
   const isTargetMet = sales >= target;
   const actualPercent = ((sales / target) * 100).toFixed(1);
 
+  // NEW: Dynamic spacing to prevent text overlap
+  const labelTransform = cutInPercent > 80 ? 'translateX(-100%)' : 'translateX(-50%)';
+  const labelMargin = cutInPercent > 80 ? '-6px' : '0px';
+
   return (
     <div className="w-full flex flex-col justify-center">
         <div className="flex justify-between text-[10px] md:text-xs mb-1">
@@ -42,7 +46,7 @@ const ProgressBar = ({ sales, cutIn, target }) => {
                 className={`h-full rounded-full transition-all duration-1000 ${isTargetMet ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : isCutInMet ? 'bg-blue-500' : 'bg-neutral-500'}`}
                 style={{ width: `${salesPercent}%` }}
             ></div>
-            {/* Cut-in Marker */}
+            {/* Cut-in Marker Line */}
             <div
                 className="absolute top-[-4px] bottom-[-4px] w-1.5 bg-yellow-400 z-10 rounded-sm shadow-[0_0_5px_rgba(250,204,21,1)] border border-black"
                 style={{ left: `${cutInPercent}%`, transform: 'translateX(-50%)' }}
@@ -51,9 +55,15 @@ const ProgressBar = ({ sales, cutIn, target }) => {
         </div>
         <div className="flex justify-between text-[9px] md:text-[10px] text-neutral-500 mt-1 relative h-4">
             <span>0</span>
+            {/* Cut-in Text Label */}
             <span
-                style={{ position: 'absolute', left: `${cutInPercent}%`, transform: 'translateX(-50%)' }}
-                className="text-yellow-500/90 font-bold whitespace-nowrap"
+                style={{ 
+                    position: 'absolute', 
+                    left: `${cutInPercent}%`, 
+                    transform: labelTransform,
+                    marginLeft: labelMargin
+                }}
+                className="text-yellow-500/90 font-bold whitespace-nowrap transition-transform"
             >
                 Cut-in ({cutIn})
             </span>
