@@ -1,19 +1,6 @@
-import React, { useState } from 'react';
-import { Trophy, TrendingUp, ChevronRight, Store, Medal, Award, Search, X, Crosshair } from 'lucide-react';
-
-// Added realistic 'sales' data to simulate mid-campaign progress
-const MOCK_DATA = [
-  { id: 31, name: "JB HIFI Armadale", sales: 0, cutIn: 85, target: 92 },
-  { id: 32, name: "JB HIFI Belmont Forum", sales: 0, cutIn: 106, target: 115 },
-  { id: 33, name: "JB HIFI Booragoon", sales: 0, cutIn: 88, target: 96 },
-  { id: 34, name: "JB HIFI Bunbury", sales: 0, cutIn: 105, target: 114 },
-  { id: 35, name: "JB HIFI Clarkson", sales: 0, cutIn: 76, target: 83 },
-  { id: 36, name: "JB HIFI Forrest Chase", sales: 0, cutIn: 117, target: 127 },
-  { id: 37, name: "JB HIFI Karrinyup", sales: 0, cutIn: 85, target: 92 },
-  { id: 38, name: "JB HIFI Midland", sales: 0, cutIn: 92, target: 101 },
-  { id: 39, name: "JB HIFI Midland Gate", sales: 0, cutIn: 94, target: 102 },
-  { id: 40, name: "JB HIFI Myaree", sales: 0, cutIn: 112, target: 122 },
-];
+import { useEffect, useState } from 'react';
+import Papa from 'papaparse';
+import { X, Search } from 'lucide-react';
 
 const Header = ({ title }) => (
   <header className="w-full bg-black border-b border-neutral-800 p-4 md:px-8 flex flex-col md:flex-row justify-between items-center z-10 relative">
@@ -28,7 +15,7 @@ const Header = ({ title }) => (
     </div>
     <div className="flex flex-col items-center md:items-end">
       <h1 className="text-white text-lg md:text-2xl font-black uppercase tracking-widest text-center md:text-right">
-        Black Friday <span className="text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.8)]">Incentive</span>
+        Black Friday <span className="text-neutral-400 drop-shadow-[0_0_10px_rgba(163,163,163,0.8)]">Incentive</span>
       </h1>
       <p className="text-neutral-400 text-xs md:text-sm uppercase tracking-widest mt-1">Live % Leaderboard</p>
     </div>
@@ -55,7 +42,6 @@ const ProgressBar = ({ sales, cutIn, target }) => {
                 className={`h-full rounded-full transition-all duration-1000 ${isTargetMet ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : isCutInMet ? 'bg-blue-500' : 'bg-neutral-500'}`}
                 style={{ width: `${salesPercent}%` }}
             ></div>
-            {/* Cut-in Marker */}
             <div
                 className="absolute top-[-4px] bottom-[-4px] w-1.5 bg-yellow-400 z-10 rounded-sm shadow-[0_0_5px_rgba(250,204,21,1)] border border-black"
                 style={{ left: `${cutInPercent}%`, transform: 'translateX(-50%)' }}
@@ -95,7 +81,7 @@ const RankList = ({ data, startIndex = 1 }) => {
              <div className={`col-span-2 md:col-span-1 text-center font-black text-xl md:text-2xl ${getRankStyle(index)}`}>
                  #{index + startIndex}
              </div>
-             <div className="col-span-10 md:col-span-4 font-bold text-white text-sm md:text-lg truncate group-hover:text-emerald-400 transition-colors">
+             <div className="col-span-10 md:col-span-4 font-bold text-white text-sm md:text-lg truncate group-hover:text-neutral-300 transition-colors">
                  {item.name}
              </div>
              <div className="col-span-12 md:col-span-7 mt-3 md:mt-0">
@@ -109,7 +95,37 @@ const RankList = ({ data, startIndex = 1 }) => {
 };
 
 export default function App() {
-  const [data] = useState(MOCK_DATA);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // IMPORTANT: Paste your actual Google Sheets CSV link for S-Series here!
+  const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSrXl7Scqf1VBbVtF6fDfwuklrIsdVI2fTInCoQ3UJqn3OwUIUS5M0uAQwxDs0Zq61Pg6xQD60ZFl7Y/pub?gid=1077907476&single=true&output=csv";
+
+  useEffect(() => {
+    Papa.parse(GOOGLE_SHEET_CSV_URL, {
+      download: true,
+      header: true,
+      complete: (results) => {
+        const liveData = results.data
+          .filter(row => row.Store) 
+          .map((row, index) => ({
+            id: index,
+            name: row.Store,
+            sales: Number(row["Sales"]) || 0,
+            target: Number(row.Target),
+            cutIn: Number(row["Cut-in"])
+          }));
+        
+        setData(liveData);
+        setLoading(false);
+      },
+      error: (error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      }
+    });
+  }, []);
+
   const title = "S-Series Squad";
   
   const sortedData = [...data].sort((a, b) => {
@@ -123,15 +139,15 @@ export default function App() {
     <>
       <style>{`body { background-color: #050505; color: white; margin: 0; font-family: system-ui, -apple-system, sans-serif; }`}</style>
       <div className="min-h-screen bg-[#050505] flex flex-col font-sans relative overflow-x-hidden">
-        <div className="fixed top-0 left-0 w-full h-96 bg-gradient-to-b from-emerald-900/20 to-transparent pointer-events-none z-0"></div>
-        <div className="fixed top-[-20%] right-[-10%] w-[50%] h-[50%] bg-emerald-900/20 rounded-full blur-[120px] pointer-events-none z-0"></div>
+        <div className="fixed top-0 left-0 w-full h-96 bg-gradient-to-b from-neutral-600/10 to-transparent pointer-events-none z-0"></div>
+        <div className="fixed top-[-20%] right-[-10%] w-[50%] h-[50%] bg-neutral-500/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
         
         <Header title={title} />
 
         <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-8 relative z-10 flex flex-col items-center">
           
           <div className="flex flex-col items-center w-full max-w-4xl mx-auto mb-8 px-2 mt-4 gap-4">
-             <h3 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-600 tracking-wide uppercase drop-shadow-lg text-center">
+             <h3 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-500 tracking-wide uppercase drop-shadow-lg text-center">
                 {title}
              </h3>
              <div className="flex flex-wrap justify-center items-center gap-4 mt-2">
@@ -141,7 +157,11 @@ export default function App() {
           </div>
 
           <div className="w-full animate-in fade-in slide-in-from-bottom-8 duration-500 mt-4 md:mt-8">
-            {sortedData.length > 0 ? (
+            {loading ? (
+                <div className="w-full text-center py-20 text-neutral-400 flex flex-col items-center font-bold text-lg animate-pulse">
+                    Connecting to Live Data...
+                </div>
+            ) : sortedData.length > 0 ? (
                <RankList data={sortedData} startIndex={1} />
             ) : (
                <div className="w-full text-center py-20 text-neutral-500 flex flex-col items-center">

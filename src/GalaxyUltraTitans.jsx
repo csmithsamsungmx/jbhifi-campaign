@@ -1,11 +1,6 @@
-import React, { useState } from 'react';
-import { Trophy, TrendingUp, ChevronRight, Store, Medal, Award, Search, X, Crosshair } from 'lucide-react';
-
-// Added realistic 'sales' data to simulate mid-campaign progress
-const MOCK_DATA = [
-  { id: 11, name: "JB HIFI Malaga (Titan)", sales: 0, cutIn: 186, target: 203 },
-  { id: 12, name: "JB Hifi Osborne Park (Titan)", sales: 0, cutIn: 194, target: 211 },
-];
+import { useEffect, useState } from 'react';
+import Papa from 'papaparse';
+import { X, Search } from 'lucide-react';
 
 const Header = ({ title }) => (
   <header className="w-full bg-black border-b border-neutral-800 p-4 md:px-8 flex flex-col md:flex-row justify-between items-center z-10 relative">
@@ -101,7 +96,37 @@ const RankList = ({ data, startIndex = 1 }) => {
 };
 
 export default function App() {
-  const [data] = useState(MOCK_DATA);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // IMPORTANT: Paste your actual Google Sheets CSV link inside the quotes below!
+  const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSrXl7Scqf1VBbVtF6fDfwuklrIsdVI2fTInCoQ3UJqn3OwUIUS5M0uAQwxDs0Zq61Pg6xQD60ZFl7Y/pub?gid=0&single=true&output=csv";
+
+  useEffect(() => {
+    Papa.parse(GOOGLE_SHEET_CSV_URL, {
+      download: true,
+      header: true,
+      complete: (results) => {
+        const liveData = results.data
+          .filter(row => row.Store) 
+          .map((row, index) => ({
+            id: index,
+            name: row.Store,
+            sales: Number(row["Sales"]) || 0,
+            target: Number(row.Target),
+            cutIn: Number(row["Cut-in"])
+          }));
+        
+        setData(liveData);
+        setLoading(false);
+      },
+      error: (error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      }
+    });
+  }, []);
+
   const title = "Galaxy Ultra Titans";
   
   const sortedData = [...data].sort((a, b) => {
@@ -133,7 +158,11 @@ export default function App() {
           </div>
 
           <div className="w-full animate-in fade-in slide-in-from-bottom-8 duration-500 mt-4 md:mt-8">
-            {sortedData.length > 0 ? (
+            {loading ? (
+                <div className="w-full text-center py-20 text-neutral-400 flex flex-col items-center font-bold text-lg animate-pulse">
+                    Connecting to Live Data...
+                </div>
+            ) : sortedData.length > 0 ? (
                <RankList data={sortedData} startIndex={1} />
             ) : (
                <div className="w-full text-center py-20 text-neutral-500 flex flex-col items-center">
