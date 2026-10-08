@@ -127,7 +127,7 @@ export default function App() {
     });
   }, []);
 
-  const title = "Galaxy Ultra Titans";
+  const title = "Titanium";
   
   const sortedData = [...data].sort((a, b) => {
      const aPercent = a.sales / a.target;

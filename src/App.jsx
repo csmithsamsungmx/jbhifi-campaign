@@ -8,10 +8,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/titans" element={<GalaxyUltraTitans />} />
-        <Route path="/visionaries" element={<ZFoldVisionaries />} />
-        <Route path="/s-squad" element={<SSeriesSquad />} />
-        <Route path="/a-team" element={<GalaxyATeam />} />
+        <Route path="/titanium" element={<GalaxyUltraTitans />} />
+        <Route path="/knox" element={<ZFoldVisionaries />} />
+        <Route path="/ultra" element={<SSeriesSquad />} />
+        <Route path="/vision" element={<GalaxyATeam />} />
       </Routes>
     </BrowserRouter>
   );

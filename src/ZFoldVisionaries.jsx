@@ -126,7 +126,7 @@ export default function App() {
     });
   }, []);
 
-  const title = "Z Fold Visionaries";
+  const title = "Knox";
   
   const sortedData = [...data].sort((a, b) => {
      const aPercent = a.sales / a.target;

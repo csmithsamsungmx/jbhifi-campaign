@@ -126,7 +126,7 @@ export default function App() {
     });
   }, []);
 
-  const title = "S-Series Squad";
+  const title = "Ultra";
   
   const sortedData = [...data].sort((a, b) => {
      const aPercent = a.sales / a.target;

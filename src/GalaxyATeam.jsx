@@ -126,7 +126,7 @@ export default function App() {
     });
   }, []);
 
-  const title = "Galaxy A-Team";
+  const title = "Vision";
   
   const sortedData = [...data].sort((a, b) => {
      const aPercent = a.sales / a.target;
