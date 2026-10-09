@@ -54,16 +54,16 @@ const ProgressBar = ({ sales, cutIn, target }) => {
         <div className="flex justify-between text-[9px] md:text-[10px] text-neutral-500 mt-1 relative h-4">
             <span>0</span>
             <span
-                style={{
-                    position: 'absolute',
-                    left: `${cutInPercent}%`,
-                    transform: labelTransform,
-                    marginLeft: labelMargin
-                }}
-                className={`font-bold whitespace-nowrap transition-all duration-500 ${isCutInMet ? 'text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]' : 'text-yellow-500/90'}`}
-            >
-                {isCutInMet ? `✓ FYF Unlocked (${cutIn})` : `Cut-in (${cutIn})`}
-            </span>
+            style={{
+                position: 'absolute',
+                left: `${cutInPercent}%`,
+                transform: labelTransform,
+                marginLeft: labelMargin
+            }}
+            className={`font-bold whitespace-nowrap transition-all duration-500 ${isCutInMet ? 'text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]' : 'text-yellow-500/90'}`}
+        >
+            Cut-in ({cutIn})
+        </span>
             <span className={isTargetMet ? 'text-green-400 font-bold drop-shadow-[0_0_5px_rgba(34,197,94,0.8)]' : ''}>
                 Target ({target})
             </span>
@@ -137,7 +137,7 @@ export default function App() {
             name: row.Store,
             sales: Number(row.Sales) || 0,
             target: Number(row.Target) || 0,
-            cutIn: Number(row.Cutin) || 0
+            cutIn: Number(row["Cut-in"]) || Number(row.Cutin) || 0
           }));
         
         setData(liveData);
