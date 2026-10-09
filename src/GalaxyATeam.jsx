@@ -46,7 +46,7 @@ const ProgressBar = ({ sales, cutIn, target }) => {
                 style={{ width: `${salesPercent}%` }}
             ></div>
             <div
-                className={`absolute top-[-4px] bottom-[-4px] w-1.5 z-10 rounded-sm border border-black transition-colors duration-500 ${isCutInMet ? 'bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,1)]' : 'bg-yellow-400 shadow-[0_0_5px_rgba(250,204,21,1)]'}`}
+                className="absolute top-[-4px] bottom-[-4px] w-1.5 z-10 rounded-sm border border-black bg-yellow-400 shadow-[0_0_5px_rgba(250,204,21,1)]"
                 style={{ left: `${cutInPercent}%`, transform: 'translateX(-50%)' }}
                 title={`Cut-in: ${cutIn}`}
             ></div>
@@ -60,9 +60,9 @@ const ProgressBar = ({ sales, cutIn, target }) => {
                     transform: labelTransform,
                     marginLeft: labelMargin
                 }}
-                className={`font-bold whitespace-nowrap transition-all duration-500 ${isCutInMet ? 'text-blue-400 drop-shadow-[0_0_5px_rgba(96,165,250,0.8)]' : 'text-yellow-500/90'}`}
+                className={`font-bold whitespace-nowrap transition-all duration-500 ${isCutInMet ? 'text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]' : 'text-yellow-500/90'}`}
             >
-                {isCutInMet ? '✓ $100 FYF' : `Cut-in (${cutIn})`}
+                {isCutInMet ? `✓ FYF Unlocked (${cutIn})` : `Cut-in (${cutIn})`}
             </span>
             <span className={isTargetMet ? 'text-green-400 font-bold drop-shadow-[0_0_5px_rgba(34,197,94,0.8)]' : ''}>
                 Target ({target})
@@ -103,7 +103,7 @@ const RankList = ({ data, startIndex = 1 }) => {
                      {isCutInMet && (
                         <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider border ${isTargetMet ? 'bg-green-500/20 text-green-400 border-green-500/50' : 'bg-blue-500/20 text-blue-400 border-blue-500/50'} animate-in fade-in slide-in-from-left-2 duration-500`}>
                           <Gift size={12} className={isTargetMet ? 'text-green-400' : 'text-blue-400'} />
-                          $100 FYF Unlocked!
+                          FYF Unlocked!
                         </div>
                      )}
                    </div>
@@ -123,7 +123,6 @@ export default function App() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // IMPORTANT: Paste your actual Google Sheets CSV link here!
   const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSrXl7Scqf1VBbVtF6fDfwuklrIsdVI2fTInCoQ3UJqn3OwUIUS5M0uAQwxDs0Zq61Pg6xQD60ZFl7Y/pub?gid=2070861314&single=true&output=csv";
 
   useEffect(() => {
