@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Papa from 'papaparse';
-import { X, Search } from 'lucide-react';
+import { X, Search, Gift } from 'lucide-react';
 
 const Header = ({ title }) => (
   <header className="w-full bg-black border-b border-neutral-800 p-4 md:px-8 flex flex-col md:flex-row justify-between items-center z-10 relative">
@@ -29,7 +29,6 @@ const ProgressBar = ({ sales, cutIn, target }) => {
   const isTargetMet = sales >= target;
   const actualPercent = ((sales / target) * 100).toFixed(1);
 
-  // NEW: Dynamic spacing to prevent text overlap
   const labelTransform = cutInPercent > 80 ? 'translateX(-100%)' : 'translateX(-50%)';
   const labelMargin = cutInPercent > 80 ? '-6px' : '0px';
 
@@ -37,37 +36,37 @@ const ProgressBar = ({ sales, cutIn, target }) => {
     <div className="w-full flex flex-col justify-center">
         <div className="flex justify-between text-[10px] md:text-xs mb-1">
             <span className="text-neutral-400 font-medium">Sales: {sales}</span>
-            <span className={`font-black ${isTargetMet ? 'text-green-400' : isCutInMet ? 'text-blue-400' : 'text-neutral-300'}`}>
+            <span className={`font-black transition-colors duration-500 ${isTargetMet ? 'text-green-400 animate-pulse' : isCutInMet ? 'text-blue-400' : 'text-neutral-300'}`}>
                 {actualPercent}%
             </span>
         </div>
         <div className="w-full bg-neutral-800 h-2 md:h-3 rounded-full relative">
             <div
-                className={`h-full rounded-full transition-all duration-1000 ${isTargetMet ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : isCutInMet ? 'bg-blue-500' : 'bg-neutral-500'}`}
+                className={`h-full rounded-full transition-all duration-1000 ease-out ${isTargetMet ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.6)]' : isCutInMet ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 'bg-neutral-500'}`}
                 style={{ width: `${salesPercent}%` }}
             ></div>
-            {/* Cut-in Marker Line */}
             <div
-                className="absolute top-[-4px] bottom-[-4px] w-1.5 bg-yellow-400 z-10 rounded-sm shadow-[0_0_5px_rgba(250,204,21,1)] border border-black"
+                className={`absolute top-[-4px] bottom-[-4px] w-1.5 z-10 rounded-sm border border-black transition-colors duration-500 ${isCutInMet ? 'bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,1)]' : 'bg-yellow-400 shadow-[0_0_5px_rgba(250,204,21,1)]'}`}
                 style={{ left: `${cutInPercent}%`, transform: 'translateX(-50%)' }}
                 title={`Cut-in: ${cutIn}`}
             ></div>
         </div>
         <div className="flex justify-between text-[9px] md:text-[10px] text-neutral-500 mt-1 relative h-4">
             <span>0</span>
-            {/* Cut-in Text Label */}
             <span
-                style={{ 
-                    position: 'absolute', 
-                    left: `${cutInPercent}%`, 
+                style={{
+                    position: 'absolute',
+                    left: `${cutInPercent}%`,
                     transform: labelTransform,
                     marginLeft: labelMargin
                 }}
-                className="text-yellow-500/90 font-bold whitespace-nowrap transition-transform"
+                className={`font-bold whitespace-nowrap transition-all duration-500 ${isCutInMet ? 'text-blue-400 drop-shadow-[0_0_5px_rgba(96,165,250,0.8)]' : 'text-yellow-500/90'}`}
             >
-                Cut-in ({cutIn})
+                {isCutInMet ? '✓ $100 FYF' : `Cut-in (${cutIn})`}
             </span>
-            <span>Target ({target})</span>
+            <span className={isTargetMet ? 'text-green-400 font-bold drop-shadow-[0_0_5px_rgba(34,197,94,0.8)]' : ''}>
+                Target ({target})
+            </span>
         </div>
     </div>
   );
@@ -78,7 +77,7 @@ const RankList = ({ data, startIndex = 1 }) => {
 
   const getRankStyle = (index) => {
     const rank = index + startIndex;
-    if (rank === 1) return "text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]";
+    if (rank === 1) return "text-yellow-400 drop-shadow-[0_0_12px_rgba(250,204,21,0.8)] animate-pulse scale-110";
     if (rank === 2) return "text-gray-300 drop-shadow-[0_0_8px_rgba(209,213,219,0.5)]";
     if (rank === 3) return "text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]";
     return "text-neutral-500";
@@ -87,19 +86,34 @@ const RankList = ({ data, startIndex = 1 }) => {
   return (
     <div className="w-full max-w-4xl mx-auto bg-neutral-900/80 backdrop-blur-md rounded-xl border border-neutral-800 shadow-2xl overflow-hidden mb-12">
       <div className="divide-y divide-neutral-800/50">
-        {data.map((item, index) => (
-          <div key={item.id} className="grid grid-cols-12 gap-2 md:gap-6 p-4 md:p-6 items-center hover:bg-neutral-800/60 transition-colors duration-200 group">
-             <div className={`col-span-2 md:col-span-1 text-center font-black text-xl md:text-2xl ${getRankStyle(index)}`}>
-                 #{index + startIndex}
-             </div>
-             <div className="col-span-10 md:col-span-4 font-bold text-white text-sm md:text-lg truncate group-hover:text-neutral-300 transition-colors">
-                 {item.name}
-             </div>
-             <div className="col-span-12 md:col-span-7 mt-3 md:mt-0">
-                 <ProgressBar sales={item.sales} cutIn={item.cutIn} target={item.target} />
-             </div>
-          </div>
-        ))}
+        {data.map((item, index) => {
+          const isCutInMet = item.sales >= item.cutIn;
+          const isTargetMet = item.sales >= item.target;
+
+          return (
+            <div key={item.id} className="grid grid-cols-12 gap-2 md:gap-6 p-4 md:p-6 items-center hover:bg-neutral-800 hover:scale-[1.01] transition-all duration-300 ease-out group cursor-default">
+               <div className={`col-span-2 md:col-span-1 text-center font-black text-xl md:text-2xl transition-all ${getRankStyle(index)}`}>
+                   #{index + startIndex}
+               </div>
+               <div className="col-span-10 md:col-span-4 flex flex-col justify-center">
+                   <div className="font-bold text-white text-sm md:text-lg truncate group-hover:text-neutral-200 transition-colors">
+                       {item.name}
+                   </div>
+                   <div className="h-5 mt-0.5 flex items-center">
+                     {isCutInMet && (
+                        <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider border ${isTargetMet ? 'bg-green-500/20 text-green-400 border-green-500/50' : 'bg-blue-500/20 text-blue-400 border-blue-500/50'} animate-in fade-in slide-in-from-left-2 duration-500`}>
+                          <Gift size={12} className={isTargetMet ? 'text-green-400' : 'text-blue-400'} />
+                          $100 FYF Unlocked!
+                        </div>
+                     )}
+                   </div>
+               </div>
+               <div className="col-span-12 md:col-span-7 mt-2 md:mt-0">
+                   <ProgressBar sales={item.sales} cutIn={item.cutIn} target={item.target} />
+               </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -109,7 +123,7 @@ export default function App() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // IMPORTANT: Paste your actual Google Sheets CSV link for S-Series here!
+  // IMPORTANT: Paste your actual Google Sheets CSV link here!
   const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSrXl7Scqf1VBbVtF6fDfwuklrIsdVI2fTInCoQ3UJqn3OwUIUS5M0uAQwxDs0Zq61Pg6xQD60ZFl7Y/pub?gid=1077907476&single=true&output=csv";
 
   useEffect(() => {
@@ -122,9 +136,9 @@ export default function App() {
           .map((row, index) => ({
             id: index,
             name: row.Store,
-            sales: Number(row["Sales"]) || 0,
-            target: Number(row.Target),
-            cutIn: Number(row["Cut-in"])
+            sales: Number(row.Sales) || 0,
+            target: Number(row.Target) || 0,
+            cutIn: Number(row.Cutin) || 0
           }));
         
         setData(liveData);
