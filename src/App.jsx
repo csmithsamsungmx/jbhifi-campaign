@@ -5,7 +5,7 @@ import './index.css'
 
 // Import all 5 of your dashboards
 import ExecutiveDashboard from './ExecutiveDashboard.jsx'
-import GalaxyUltraTitans from './GalaxyUltraTitans_2.jsx'
+import GalaxyUltraTitans from './GalaxyUltraTitans.jsx'
 import ZFoldVisionaries from './ZFoldVisionaries.jsx'
 import SSeriesSquad from './SSeriesSquad.jsx'
 import GalaxyATeam from './GalaxyATeam.jsx'
