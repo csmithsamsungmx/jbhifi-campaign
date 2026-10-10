@@ -208,7 +208,7 @@ export default function ExecutiveDashboard() {
                     <AlertTriangle className="text-red-400" size={24} />
                   </div>
                   <h2 className="text-2xl md:text-3xl font-black uppercase tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-600">
-                    Critical Focus
+                    Opportunity Stores
                   </h2>
                 </div>
                 
