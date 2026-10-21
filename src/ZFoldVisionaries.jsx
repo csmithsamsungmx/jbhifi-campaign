@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Papa from 'papaparse';
 import { X, Search, Gift } from 'lucide-react';
+import { X, Search, Gift, Rocket } from 'lucide-react';
 
 const Header = ({ title }) => (
   <header className="w-full bg-black border-b border-neutral-800 p-4 md:px-8 flex flex-col md:flex-row justify-between items-center z-10 relative">
@@ -40,30 +41,47 @@ const ProgressBar = ({ sales, cutIn, target }) => {
                 {actualPercent}%
             </span>
         </div>
-        <div className="w-full bg-neutral-800 h-2 md:h-3 rounded-full relative">
+        {/* Added a tiny bit of top margin so the rocket fits nicely */}
+        <div className="w-full bg-neutral-800 h-2 md:h-3 rounded-full relative mt-1.5">
+            
+            {/* The Progress Fill */}
             <div
-                className={`h-full rounded-full transition-all duration-1000 ease-out ${isTargetMet ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.6)]' : isCutInMet ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 'bg-neutral-500'}`}
+                className={`h-full rounded-full transition-all duration-1000 ease-out relative ${isTargetMet ? 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.6)]' : isCutInMet ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' : 'bg-neutral-500'}`}
                 style={{ width: `${salesPercent}%` }}
-            ></div>
+            >
+                {/* 🚀 The Rocket tracking the leading edge */}
+                <div className="absolute top-1/2 -right-3 -translate-y-1/2 z-20 animate-pulse transition-colors duration-500">
+                    <Rocket 
+                        size={18} 
+                        className={`rotate-45 drop-shadow-[0_0_8px_currentColor] ${
+                            isTargetMet ? 'text-green-100 fill-green-500' : 
+                            isCutInMet ? 'text-blue-100 fill-blue-500' : 
+                            'text-neutral-200 fill-neutral-400'
+                        }`} 
+                    />
+                </div>
+            </div>
+
             <div
                 className="absolute top-[-4px] bottom-[-4px] w-1.5 z-10 rounded-sm border border-black bg-yellow-400 shadow-[0_0_5px_rgba(250,204,21,1)]"
                 style={{ left: `${cutInPercent}%`, transform: 'translateX(-50%)' }}
                 title={`Cut-in: ${cutIn}`}
             ></div>
         </div>
-        <div className="flex justify-between text-[9px] md:text-[10px] text-neutral-500 mt-1 relative h-4">
+        {/* Added a tiny bit of bottom margin for spacing */}
+        <div className="flex justify-between text-[9px] md:text-[10px] text-neutral-500 mt-2 relative h-4">
             <span>0</span>
             <span
-            style={{
-                position: 'absolute',
-                left: `${cutInPercent}%`,
-                transform: labelTransform,
-                marginLeft: labelMargin
-            }}
-            className={`font-bold whitespace-nowrap transition-all duration-500 ${isCutInMet ? 'text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]' : 'text-yellow-500/90'}`}
-        >
-            Cut-in ({cutIn})
-        </span>
+                style={{
+                    position: 'absolute',
+                    left: `${cutInPercent}%`,
+                    transform: labelTransform,
+                    marginLeft: labelMargin
+                }}
+                className={`font-bold whitespace-nowrap transition-all duration-500 ${isCutInMet ? 'text-yellow-400 drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]' : 'text-yellow-500/90'}`}
+            >
+                Cut-in ({cutIn})
+            </span>
             <span className={isTargetMet ? 'text-green-400 font-bold drop-shadow-[0_0_5px_rgba(34,197,94,0.8)]' : ''}>
                 Target ({target})
             </span>
