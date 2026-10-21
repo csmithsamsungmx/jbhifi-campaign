@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import Papa from 'papaparse';
-import { X, Search, Gift } from 'lucide-react';
 import { X, Search, Gift, Rocket } from 'lucide-react';
 
 const Header = ({ title }) => (
